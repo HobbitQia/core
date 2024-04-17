@@ -1,4 +1,4 @@
-package foo
+package mini.foo
 
 import chisel3._
 import chisel3.util._

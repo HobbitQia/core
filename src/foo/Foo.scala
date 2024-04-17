@@ -1,4 +1,4 @@
-package foo
+package mini.foo
 
 import chisel3._
 import chisel3.util._
@@ -9,7 +9,7 @@ import common.storage._
 import common.axi._
 import qdma.examples._
 import common.partialReconfig.AlveoStaticIO
-import foo._
+import mini.foo._
 import mini.core._
 import mini.junctions._
 
