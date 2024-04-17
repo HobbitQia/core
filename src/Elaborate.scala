@@ -5,13 +5,15 @@ import chisel3.stage.ChiselStage
 import firrtl.options.TargetDirAnnotation
 import mini.foo._
 import mini.core._
+import mini.junctions._
 
 object elaborate extends App {
   val targetDirectory = "Verilog"
   val dir 	= TargetDirAnnotation("Verilog")
+  val config = MiniConfig()
   args(0) match{
     case "test_csr" => (new ChiselStage()).emitSystemVerilog(
-        new test(),
+        new test_csr(),
         Array("--target-dir", "Verilog", "--full-stacktrace", "--output-annotation-file", "Foo.sv")
       )
 		case "AlveoDynamicTop" => (new ChiselStage()).emitSystemVerilog(

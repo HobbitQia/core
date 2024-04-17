@@ -168,6 +168,13 @@ class Foo extends Module{
 	reg_status(301) := mini_core.io.rdma_print_string_num
 	reg_status(302) := mini_core.io.rdma_print_string_len
 	reg_status(303) := mini_core.io.rdma_trap
+	mini_core.io.has_event_wr := DontCare
+    mini_core.io.has_event_rd := DontCare
+    mini_core.io.event_recv_cnt := DontCare
+    mini_core.io.event_processed_cnt := DontCare
+    mini_core.io.event_type := DontCare
+    mini_core.io.user_csr_wr := DontCare
+    mini_core.io.user_csr_rd := DontCare
 
 	val hbm_port = hbm_driver.io.axi_hbm(1)
 
