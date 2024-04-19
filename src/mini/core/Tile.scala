@@ -112,13 +112,14 @@ class TileIO(xlen: Int, nastiParams: NastiBundleParameters) extends Bundle {
     val rdma_print_string_len = Output(UInt(xlen.W))
     val rdma_trap = Output(UInt(xlen.W))
     // RDMA Hardware
+    val user_header_len   = Output(UInt(xlen.W))
     val has_event_wr	    = Input(Bool())   
     val has_event_rd	    = Output(Bool())  
-    val event_recv_cnt	    = Output(UInt(32.W))
-    val event_processed_cnt	= Output(UInt(32.W))
-    val event_type	        = Output(UInt(32.W))
-    val user_csr_wr	    = Input(Vec(32,UInt(32.W)))
-	val user_csr_rd	    = Output(Vec(32,UInt(32.W)))
+    val event_recv_cnt	    = Output(UInt(xlen.W))
+    val event_processed_cnt	= Output(UInt(xlen.W))
+    val event_type	        = Output(UInt(xlen.W))
+    val user_csr_wr	    = Input(Vec(32,UInt(xlen.W)))
+	val user_csr_rd	    = Output(Vec(32,UInt(xlen.W)))
 }
 
 object Tile {
@@ -140,6 +141,7 @@ class Tile(val coreParams: CoreConfig, val nastiParams: NastiBundleParameters, v
     io.rdma_print_string_num := core.io.rdma_print_string_num
     io.rdma_print_string_len := core.io.rdma_print_string_len
     io.rdma_trap := core.io.rdma_trap
+    io.user_header_len <> core.io.user_header_len
     io.has_event_wr <> core.io.has_event_wr
     io.has_event_rd <> core.io.has_event_rd
     io.event_recv_cnt <> core.io.event_recv_cnt

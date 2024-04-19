@@ -26,6 +26,7 @@ class CoreIO(xlen: Int) extends Bundle {
   val rdma_print_string_len = Output(UInt(xlen.W))
   val rdma_trap = Output(UInt(xlen.W))
   // RDMA Hardware
+  val user_header_len   = Output(UInt(xlen.W))
   val has_event_wr	    = Input(Bool())   
   val has_event_rd	    = Output(Bool())  
   val event_recv_cnt	    = Output(UInt(xlen.W))
@@ -49,6 +50,7 @@ class Core(val conf: CoreConfig) extends Module {
   io.rdma_print_string_len := dpath.io.rdma_print_string_len
   io.rdma_trap := dpath.io.rdma_trap
 
+  io.user_header_len <> dpath.io.user_header_len
   io.has_event_wr <> dpath.io.has_event_wr
   io.has_event_rd <> dpath.io.has_event_rd
   io.event_recv_cnt <> dpath.io.event_recv_cnt
