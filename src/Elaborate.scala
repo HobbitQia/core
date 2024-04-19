@@ -12,14 +12,8 @@ object elaborate extends App {
   val dir 	= TargetDirAnnotation("Verilog")
   val config = MiniConfig()
   args(0) match{
-    case "test_csr" => (new ChiselStage()).emitSystemVerilog(
-        new test_csr(),
-        Array("--target-dir", "Verilog", "--full-stacktrace", "--output-annotation-file", "Foo.sv")
-      )
-		case "AlveoDynamicTop" => (new ChiselStage()).emitSystemVerilog(
-        new Foo(),
-        Array("--target-dir", "Verilog", "--full-stacktrace", "--output-annotation-file", "Foo.sv")
-      )
+    case "test_csr" => (new ChiselStage()).emitSystemVerilog(new test_csr(), Array("--target-dir", "Verilog", "--full-stacktrace", "--output-annotation-file", "Foo.sv"))
+		case "AlveoDynamicTop" => (new ChiselStage()).emitSystemVerilog(new Foo(), Array("--target-dir", "Verilog", "--full-stacktrace", "--output-annotation-file", "Foo.sv"))
 		case "mini" => (new ChiselStage()).emitSystemVerilog(
         new Tile(
           coreParams = config.core,
