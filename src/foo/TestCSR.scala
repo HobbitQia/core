@@ -16,6 +16,7 @@ import mini.junctions._
 class test_csr extends Module {
     val io = IO(new Bundle {
         val cpu_started = Input(Bool())
+        val pkg_type_to_cc    = Output(UInt(xlen.W))
         val user_header_len   = Output(UInt(32.W))
         val has_event_wr	    = Input(Bool())   //write pkg_meta & cc_state
         val has_event_rd	    = Output(Bool())  // has_event_rd ==0 &  event_recv_cnt == event_processed_cnt
@@ -36,6 +37,7 @@ class test_csr extends Module {
 		))
 	}
 
+    io.pkg_type_to_cc  <> mini_core.io.pkg_type_to_cc
     io.user_header_len <> mini_core.io.user_header_len
     mini_core.io.has_event_wr <> io.has_event_wr
     mini_core.io.has_event_rd <> io.has_event_rd

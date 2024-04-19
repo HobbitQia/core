@@ -53,6 +53,7 @@ endmodule
 /*
 To test CSR module
 
+
 test:
     add zero, zero, zero
     csrrw x1, 0x070, zero
@@ -63,6 +64,15 @@ test:
     csrrw zero, 0x072, x2
     csrrs x4, 0x040, zero
     csrrw x5, 0x05F, zero   
-    loop: jal loop
+    addi x7, zero, 5
+    csrrw x6, 0x06F, x7
+    csrrs x7, 0x06F, zero
+    csrrw x6, 0x06F, zero 
+    addi x7, zero, 4
+    csrrw x6, 0x06E, x7
+    csrrs x7, 0x06E, zero
+    csrrw x6, 0x06E, zero 
+loop: 
+    jal loop
     nop
 */

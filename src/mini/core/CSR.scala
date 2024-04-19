@@ -66,6 +66,7 @@ object CSR {
   
   // 0x040-0x5F
   // val meta_csr = "b000001??????".U(12.W)
+  val pkg_type_to_cc = 0x06E.U(12.W)
   val user_header_len = 0x06F.U(12.W)
   val has_event = 0x070.U(12.W)
   val event_recv_cnt = 0x071.U(12.W)
@@ -109,6 +110,7 @@ object CSR {
     rdma_trap,
     // RDMA Hardware
     // meta_csr,
+    pkg_type_to_cc,
     user_header_len,
     has_event,
     event_recv_cnt,
@@ -151,6 +153,7 @@ class CSRIO(xlen: Int) extends Bundle {
   val rdma_print_string_len = Output(UInt(xlen.W))
   val rdma_trap = Output(UInt(xlen.W))
   // interface between CSR & Hardware
+  val pkg_type_to_cc    = Output(UInt(xlen.W))
   val user_header_len   = Output(UInt(xlen.W))
   val has_event_wr	    = Input(Bool())   
   val has_event_rd	    = Output(Bool())  
@@ -181,6 +184,7 @@ class CSR(val xlen: Int) extends Module {
   val rdma_trap = RegInit(0.U(xlen.W))
   // RDMA Hardware
   val meta_csr = RegInit(VecInit(Seq.fill(32)(0.U(xlen.W))))
+  val pkg_type_to_cc  = RegInit(0.U(xlen.W))
   val user_header_len = RegInit(0.U(xlen.W))
   val has_event = RegInit(false.B)
   val event_recv_cnt = RegInit(0.U(xlen.W))
@@ -199,6 +203,7 @@ class CSR(val xlen: Int) extends Module {
   io.event_type := event_type
   io.user_csr_rd := meta_csr
   io.user_header_len := user_header_len
+  io.pkg_type_to_cc  := pkg_type_to_cc
 
   // 判断是否和 Core 这边冲突
   when(io.has_event_wr) {
@@ -304,6 +309,7 @@ class CSR(val xlen: Int) extends Module {
     BitPat(CSR.rdma_print_string_len) -> rdma_print_string_len,
     BitPat(CSR.rdma_trap) -> rdma_trap,
     // RDMA Hardware
+    BitPat(CSR.pkg_type_to_cc) -> pkg_type_to_cc,
     BitPat(CSR.user_header_len) -> user_header_len,
     BitPat(CSR.has_event) -> has_event,
     BitPat(CSR.event_recv_cnt) -> event_recv_cnt,
@@ -415,6 +421,7 @@ class CSR(val xlen: Int) extends Module {
         .elsewhen(csr_addr === CSR.rdma_print_string_num) { rdma_print_string_num := wdata }
         .elsewhen(csr_addr === CSR.rdma_print_string_len) { rdma_print_string_len := wdata }
         .elsewhen(csr_addr === CSR.rdma_trap) { rdma_trap := wdata }
+        .elsewhen(csr_addr === CSR.pkg_type_to_cc) { pkg_type_to_cc := wdata }
         .elsewhen(csr_addr === CSR.user_header_len) { user_header_len := wdata }
         .elsewhen(csr_addr === CSR.has_event) { has_event := wdata }
         .elsewhen(csr_addr === CSR.event_recv_cnt) { event_recv_cnt := wdata }
