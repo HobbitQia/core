@@ -28,6 +28,7 @@ class CoreIO(xlen: Int) extends Bundle {
   // RDMA Hardware
   val pkg_type_to_cc    = Output(UInt(xlen.W))
   val user_header_len   = Output(UInt(xlen.W))
+  val user_table_size   = Output(UInt(xlen.W))
   val has_event_wr	    = Input(Bool())   
   val has_event_rd	    = Output(Bool())  
   val event_recv_cnt	    = Output(UInt(xlen.W))
@@ -53,6 +54,7 @@ class Core(val conf: CoreConfig) extends Module {
 
   io.pkg_type_to_cc  <> dpath.io.pkg_type_to_cc
   io.user_header_len <> dpath.io.user_header_len
+  io.user_table_size <> dpath.io.user_table_size
   io.has_event_wr <> dpath.io.has_event_wr
   io.has_event_rd <> dpath.io.has_event_rd
   io.event_recv_cnt <> dpath.io.event_recv_cnt

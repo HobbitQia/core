@@ -114,6 +114,7 @@ class TileIO(xlen: Int, nastiParams: NastiBundleParameters) extends Bundle {
     // RDMA Hardware
     val pkg_type_to_cc    = Output(UInt(xlen.W))
     val user_header_len   = Output(UInt(xlen.W))
+    val user_table_size   = Output(UInt(xlen.W))
     val has_event_wr	    = Input(Bool())   
     val has_event_rd	    = Output(Bool())  
     val event_recv_cnt	    = Output(UInt(xlen.W))
@@ -144,6 +145,7 @@ class Tile(val coreParams: CoreConfig, val nastiParams: NastiBundleParameters, v
     io.rdma_trap := core.io.rdma_trap
     io.pkg_type_to_cc  <> core.io.pkg_type_to_cc
     io.user_header_len <> core.io.user_header_len
+    io.user_table_size <> core.io.user_table_size
     io.has_event_wr <> core.io.has_event_wr
     io.has_event_rd <> core.io.has_event_rd
     io.event_recv_cnt <> core.io.event_recv_cnt

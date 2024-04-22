@@ -27,6 +27,7 @@ class DatapathIO(xlen: Int) extends Bundle {
   // RDMA Hardware
   val pkg_type_to_cc    = Output(UInt(xlen.W))
   val user_header_len   = Output(UInt(xlen.W))
+  val user_table_size   = Output(UInt(xlen.W))
   val has_event_wr	    = Input(Bool())   
   val has_event_rd	    = Output(Bool())  
   val event_recv_cnt	    = Output(UInt(xlen.W))
@@ -64,6 +65,7 @@ class Datapath(val conf: CoreConfig) extends Module {
   io.rdma_trap := csr.io.rdma_trap
   io.pkg_type_to_cc  <> csr.io.pkg_type_to_cc
   io.user_header_len <> csr.io.user_header_len
+  io.user_table_size <> csr.io.user_table_size
   io.has_event_wr <> csr.io.has_event_wr
   io.has_event_rd <> csr.io.has_event_rd
   io.event_recv_cnt <> csr.io.event_recv_cnt

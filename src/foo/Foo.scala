@@ -170,6 +170,7 @@ class Foo extends Module{
 	reg_status(303) := mini_core.io.rdma_trap
 	mini_core.io.pkg_type_to_cc  := DontCare
 	mini_core.io.user_header_len := DontCare
+	mini_core.io.user_table_size := DontCare
 	mini_core.io.has_event_wr := DontCare
     mini_core.io.has_event_rd := DontCare
     mini_core.io.event_recv_cnt := DontCare

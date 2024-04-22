@@ -18,6 +18,7 @@ class test_csr extends Module {
         val cpu_started = Input(Bool())
         val pkg_type_to_cc    = Output(UInt(32.W))
         val user_header_len   = Output(UInt(32.W))
+        val user_table_size   = Output(UInt(32.W))
         val has_event_wr	    = Input(Bool())   //write pkg_meta & cc_state
         val has_event_rd	    = Output(Bool())  // has_event_rd ==0 &  event_recv_cnt == event_processed_cnt
         val event_recv_cnt	    = Output(UInt(32.W))

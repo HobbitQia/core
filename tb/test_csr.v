@@ -56,23 +56,28 @@ To test CSR module
 
 test:
     add zero, zero, zero
-    csrrw x1, 0x070, zero
+    addi x10, x10, 0xF
+    csrrw x10, 0x093, x10
+    csrrw x1, 0x090, zero
     nop
-    csrrs x2, 0x071, zero
-    csrrs x3, 0x072, zero
-    csrrw x1, 0x070, zero
-    csrrw zero, 0x072, x2
+    csrrs x2, 0x091, zero
+    csrrs x3, 0x092, zero
+    csrrw x1, 0x090, zero
+    csrrw zero, 0x092, x2
     csrrs x4, 0x040, zero
     csrrw x5, 0x05F, zero   
     addi x7, zero, 5
-    csrrw x6, 0x06F, x7
-    csrrs x7, 0x06F, zero
-    csrrw x6, 0x06F, zero 
+    csrrw x6, 0x080, x7
+    csrrs x7, 0x080, zero
+    csrrw x6, 0x080, zero 
     addi x7, zero, 4
-    csrrw x6, 0x06E, x7
-    csrrs x7, 0x06E, zero
-    csrrw x6, 0x06E, zero 
-loop: 
-    jal loop
+    csrrw x6, 0x081, x7
+    csrrs x7, 0x081, zero
+    csrrw x6, 0x081, zero 
+    addi x7, zero, 3
+    csrrw x6, 0x082, x7
+    csrrs x7, 0x082, zero
+    csrrw x6, 0x082, zero 
+loop: jal loop
     nop
 */
