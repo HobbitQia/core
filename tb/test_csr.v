@@ -56,7 +56,7 @@ To test CSR module
 
 test:
     add zero, zero, zero
-    addi x10, x10, 0xF
+    addi x10, x0, 0xF
     csrrw x10, 0x093, x10
     csrrw x1, 0x090, zero
     nop
@@ -64,8 +64,8 @@ test:
     csrrs x3, 0x092, zero
     csrrw x1, 0x090, zero
     csrrw zero, 0x092, x2
-    csrrs x4, 0x040, zero
-    csrrw x5, 0x05F, zero   
+    csrrs x4, 0x050, zero
+    csrrw x5, 0x06F, zero   
     addi x7, zero, 5
     csrrw x6, 0x080, x7
     csrrs x7, 0x080, zero

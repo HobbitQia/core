@@ -64,7 +64,7 @@ object CSR {
   val rdma_print_string_len = 0xF2.U(12.W)
   val rdma_trap = 0xF3.U(12.W)
   
-  // 0x040-0x5F
+  // 0x050-0x6F
   // val meta_csr = "b000001??????".U(12.W)
   val user_table_size = 0x080.U(12.W)
   val user_header_len = 0x081.U(12.W)
@@ -194,7 +194,7 @@ class CSR(val xlen: Int) extends Module {
   val event_recv_cnt = RegInit(0.U(xlen.W))
   val event_processed_cnt = RegInit(0.U(xlen.W))
   val event_type = RegInit(0.U(xlen.W))
-  val meta_offset = csr_addr(3, 0)
+  val meta_offset = csr_addr(4, 0)
 
   io.rdma_print_addr := rdma_print_addr
   io.rdma_print_string_num := rdma_print_string_num
@@ -321,7 +321,7 @@ class CSR(val xlen: Int) extends Module {
     BitPat(CSR.event_recv_cnt) -> event_recv_cnt,
     BitPat(CSR.event_processed_cnt) -> event_processed_cnt,
     BitPat(CSR.event_type) -> event_type,
-    // 0x040-0x5F
+    // 0x050-0x6F
     BitPat("b00000101????") -> meta_csr(meta_offset),
     BitPat("b00000110????") -> meta_csr(meta_offset)
   )
