@@ -40,6 +40,7 @@ class test_csr extends Module {
 
     io.pkg_type_to_cc  <> mini_core.io.pkg_type_to_cc
     io.user_header_len <> mini_core.io.user_header_len
+    io.user_table_size <> mini_core.io.user_table_size
     mini_core.io.has_event_wr <> io.has_event_wr
     mini_core.io.has_event_rd <> io.has_event_rd
     mini_core.io.event_recv_cnt <> io.event_recv_cnt
