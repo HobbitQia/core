@@ -262,34 +262,34 @@ class Datapath(val conf: CoreConfig) extends Module {
 //      Mux(regFile.io.wen, regFile.io.wdata, 0.U)
 //    )
 //  }
-  class ila_core(seq:Seq[Data]) extends BaseILA(seq)
-    val inst_ila_core = Module(new ila_core(Seq(				
-      started,
-      pc,
-      inst,
-      is_wfi,
-      fe_reg.pc,
-      fe_reg.inst,
-      io.dcache.req.bits.addr,
-      io.dcache.req.bits.data,
-      io.dcache.req.bits.mask,
-      io.dcache.req.valid,
-      io.dcache.resp.bits.data,
-      io.dcache.resp.valid,
+  // class ila_core(seq:Seq[Data]) extends BaseILA(seq)
+  //   val inst_ila_core = Module(new ila_core(Seq(				
+  //     started,
+  //     pc,
+  //     inst,
+  //     is_wfi,
+  //     fe_reg.pc,
+  //     fe_reg.inst,
+  //     io.dcache.req.bits.addr,
+  //     io.dcache.req.bits.data,
+  //     io.dcache.req.bits.mask,
+  //     io.dcache.req.valid,
+  //     io.dcache.resp.bits.data,
+  //     io.dcache.resp.valid,
 
-      io.icache.req.bits.addr,
-      io.icache.req.valid,
-      io.icache.resp.bits.data,
-      io.icache.resp.valid,
+  //     io.icache.req.bits.addr,
+  //     io.icache.req.valid,
+  //     io.icache.resp.bits.data,
+  //     io.icache.resp.valid,
 
-      stall,
-      regFile.io.waddr,
-      regFile.io.wdata,
-      regFile.io.wen,
+  //     stall,
+  //     regFile.io.waddr,
+  //     regFile.io.wdata,
+  //     regFile.io.wen,
 
-      ew_reg.pc,
-      ew_reg.inst,
+  //     ew_reg.pc,
+  //     ew_reg.inst,
 
-    )))
-    inst_ila_core.connect(clock)
+  //   )))
+  //   inst_ila_core.connect(clock)
 }

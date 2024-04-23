@@ -27,10 +27,10 @@ class MemArbiterIO(val xlen: Int, params: NastiBundleParameters) extends Bundle 
     val nasti = new NastiBundle(params)
 }
 
-class MemArbiter(val xlen: Int, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig) extends Module {
+class MemArbiter(val xlen: Int, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig, val file: String) extends Module {
     val io = IO(new MemArbiterIO(xlen, nastiParams))
 
-    val ibram = Module(new Bram(true, bramParams, nastiParams, xlen, "inst.mem"))
+    val ibram = Module(new Bram(true, bramParams, nastiParams, xlen, file))
     val dbram = Module(new Bram(false, bramParams, nastiParams, xlen, "data.mem"))
     // val dbram2 = Module(new Bram(false, bramParams, nastiParams, xlen, "data2.mem"))
     val cache  = Module(new Cache(cacheParams, nastiParams, xlen))
@@ -129,11 +129,11 @@ object Tile {
 }
 
 
-class Tile(val coreParams: CoreConfig, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig)
+class Tile(val coreParams: CoreConfig, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig, val file: String="inst.mem")
     extends Module {
     val io = IO(new TileIO(coreParams.xlen, nastiParams))
     val core = Module(new Core(coreParams))
-    val arb = Module(new MemArbiter(coreParams.xlen, nastiParams, bramParams, cacheParams))
+    val arb = Module(new MemArbiter(coreParams.xlen, nastiParams, bramParams, cacheParams, file))
 
     io.host <> core.io.host
     arb.io.ibram <> core.io.icache
@@ -184,20 +184,20 @@ class Bram(val InstBram: Boolean, val b: BramParameters, val nasti: NastiBundleP
         io.resp.bits.data := bram.io.data_out_a
         io.resp.valid := true.B
 
-        class ila_bram(seq:Seq[Data]) extends BaseILA(seq)
-        val inst_ila_bram = Module(new ila_bram(Seq(
-            reset,
-            io.req.valid,
-            io.req.bits.addr,
-            io.req.bits.data,
-            io.req.bits.mask,
-            io.abort,
-            bram.io.data_out_a,
-            bram.io.addr_a,
-            bram.io.data_in_a,
-            bram.io.data_out_b,
-        )))
+        // class ila_bram(seq:Seq[Data]) extends BaseILA(seq)
+        // val inst_ila_bram = Module(new ila_bram(Seq(
+        //     reset,
+        //     io.req.valid,
+        //     io.req.bits.addr,
+        //     io.req.bits.data,
+        //     io.req.bits.mask,
+        //     io.abort,
+        //     bram.io.data_out_a,
+        //     bram.io.addr_a,
+        //     bram.io.data_in_a,
+        //     bram.io.data_out_b,
+        // )))
 
-        inst_ila_bram.connect(clock)
+        // inst_ila_bram.connect(clock)
     }
 }
