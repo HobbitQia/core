@@ -177,11 +177,11 @@ class Bram(val InstBram: Boolean, val b: BramParameters, val nasti: NastiBundleP
         val offset = log2Ceil(b.width/8).U
         val offset_addr = io.req.bits.addr - b.d_offset.U(xlen.W)
         bram.io.addr_a := offset_addr >> offset
-        bram.io.addr_b := DontCare
+        bram.io.addr_b := offset_addr >> offset
         bram.io.wr_en_a := io.req.valid && io.req.bits.mask.orR && !io.abort
         bram.io.musk_a.get := io.req.bits.mask.asUInt
         bram.io.data_in_a := io.req.bits.data
-        io.resp.bits.data := bram.io.data_out_a
+        io.resp.bits.data := bram.io.data_out_b
         io.resp.valid := true.B
 
         // class ila_bram(seq:Seq[Data]) extends BaseILA(seq)

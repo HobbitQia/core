@@ -210,12 +210,7 @@ class CSR(val xlen: Int) extends Module {
   io.user_table_size := user_table_size
   io.pkg_type_to_cc  := pkg_type_to_cc
 
-  // 判断是否和 Core 这边冲突
-  when(io.has_event_wr) {
-    has_event := true.B
-    event_recv_cnt := event_recv_cnt + 1.U
-    meta_csr := io.user_csr_wr
-  }
+
 
   val mcpuid = Cat(
     0.U(2.W) /* RV32I */,
@@ -440,6 +435,13 @@ class CSR(val xlen: Int) extends Module {
     }
   }
   
+  // 判断是否和 Core 这边冲突
+  when(io.has_event_wr) {
+    has_event := true.B
+    event_recv_cnt := event_recv_cnt + 1.U
+    meta_csr := io.user_csr_wr
+  }
+
 
   // class ila_csr(seq:Seq[Data]) extends BaseILA(seq)
   //   val inst_ila_csr = Module(new ila_csr(Seq(				
