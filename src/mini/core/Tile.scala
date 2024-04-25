@@ -51,9 +51,9 @@ class MemArbiter(val xlen: Int, val nastiParams: NastiBundleParameters, val bram
     val addr = io.dbram.req.bits.addr
     // val debug_addr = addr < "x80004000".U
     // dontTouch(debug_addr)
-    val range_check = addr >= "x80004000".U && addr < bramParams.edaddr.U
+    val range_check = addr >= bramParams.staddr.U && addr < bramParams.edaddr.U
     val range_reg = RegNext(range_check)
-    dbram.io.abort := io.dbram.abort || addr < bramParams.edaddr.U
+    dbram.io.abort := io.dbram.abort || !range_check
     // when (io.dbram.req.valid) {
     //     range_reg := range_check
     // }

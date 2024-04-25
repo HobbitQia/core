@@ -194,7 +194,7 @@ class CSR(val xlen: Int) extends Module {
   val event_recv_cnt = RegInit(0.U(xlen.W))
   val event_processed_cnt = RegInit(0.U(xlen.W))
   val event_type = RegInit(0.U(xlen.W))
-  val meta_offset = csr_addr(4, 0)
+  val meta_offset = csr_addr(3, 0)
 
   io.rdma_print_addr := rdma_print_addr
   io.rdma_print_string_num := rdma_print_string_num
@@ -322,8 +322,8 @@ class CSR(val xlen: Int) extends Module {
     BitPat(CSR.event_processed_cnt) -> event_processed_cnt,
     BitPat(CSR.event_type) -> event_type,
     // 0x050-0x6F
-    BitPat("b00000101????") -> meta_csr(meta_offset),
-    BitPat("b00000110????") -> meta_csr(meta_offset)
+    BitPat("b00000101????") -> meta_csr(Cat(0.U(1.W), meta_offset)),
+    BitPat("b00000110????") -> meta_csr(Cat(1.U(1.W), meta_offset))
   )
 
   io.out := Lookup(csr_addr, 0.U, csrFile).asUInt
@@ -435,8 +435,8 @@ class CSR(val xlen: Int) extends Module {
         .elsewhen(csr_addr === CSR.event_recv_cnt) { event_recv_cnt := wdata }
         .elsewhen(csr_addr === CSR.event_processed_cnt) { event_processed_cnt := wdata }
         .elsewhen(csr_addr === CSR.event_type) { event_type := wdata }
-        .elsewhen(csr_addr === BitPat("b00000101????")) { meta_csr(meta_offset) := wdata }
-        .elsewhen(csr_addr === BitPat("b00000110????")) { meta_csr(meta_offset) := wdata }
+        .elsewhen(csr_addr === BitPat("b00000101????")) { meta_csr(Cat(0.U(1.W), meta_offset)) := wdata }
+        .elsewhen(csr_addr === BitPat("b00000110????")) { meta_csr(Cat(1.U(1.W), meta_offset)) := wdata }
     }
   }
   

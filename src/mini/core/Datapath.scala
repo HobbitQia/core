@@ -163,8 +163,10 @@ class Datapath(val conf: CoreConfig) extends Module {
   val wb_rd_addr = ew_reg.inst(11, 7)
   val rs1hazard = wb_en && rs1_addr.orR && (rs1_addr === wb_rd_addr)
   val rs2hazard = wb_en && rs2_addr.orR && (rs2_addr === wb_rd_addr)
-  val rs1 = Mux(wb_sel === WB_ALU && rs1hazard, ew_reg.alu, regFile.io.rdata1)
-  val rs2 = Mux(wb_sel === WB_ALU && rs2hazard, ew_reg.alu, regFile.io.rdata2)
+  val rs1_alu = Mux(wb_sel === WB_ALU && rs1hazard, ew_reg.alu, regFile.io.rdata1)
+  val rs2_alu = Mux(wb_sel === WB_ALU && rs2hazard, ew_reg.alu, regFile.io.rdata2)
+  val rs1 = Mux(wb_sel === WB_CSR && rs1hazard, csr.io.out, rs1_alu)
+  val rs2 = Mux(wb_sel === WB_CSR && rs2hazard, csr.io.out, rs2_alu)
 
   // ALU operations
   alu.io.A := Mux(io.ctrl.A_sel === A_RS1, rs1, fe_reg.pc)
