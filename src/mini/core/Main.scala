@@ -13,6 +13,7 @@ object Main extends App {
     Seq(
       ChiselGeneratorAnnotation(() =>
         new Tile(
+          enable_hbm = config.enable_hbm,
           coreParams = config.core,
           bramParams = config.bram,
           nastiParams = config.nasti,

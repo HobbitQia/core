@@ -31,6 +31,7 @@ class test_csr extends Module {
     val config = MiniConfig()
 	val mini_core =  { 
 		Module(new Tile(
+        enable_hbm = config.enable_hbm,
 		coreParams = config.core, 
 		bramParams = config.bram,
 		nastiParams = config.nasti, 

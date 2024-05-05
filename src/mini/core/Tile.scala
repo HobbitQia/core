@@ -27,38 +27,35 @@ class MemArbiterIO(val xlen: Int, params: NastiBundleParameters) extends Bundle 
     val nasti = new NastiBundle(params)
 }
 
-class MemArbiter(val xlen: Int, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig, val file: String) extends Module {
+class MemArbiter(val enable_hbm: Boolean, val xlen: Int, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig, val file: String) extends Module {
     val io = IO(new MemArbiterIO(xlen, nastiParams))
 
     val ibram = Module(new Bram(true, bramParams, nastiParams, xlen, file))
     val dbram = Module(new Bram(false, bramParams, nastiParams, xlen, "data.mem"))
     // val dbram2 = Module(new Bram(false, bramParams, nastiParams, xlen, "data2.mem"))
-    val cache  = Module(new Cache(cacheParams, nastiParams, xlen))
-  
     ibram.io <> io.ibram
     dbram.io.req <> io.dbram.req
-    // dbram.io.abort := io.dbram.abort 
-    // dbram2.io.req <> io.dbram.req
-    // dbram2.io.abort := io.dbram.abort
-    // cache.io.cpu.req <> io.dbram.req
-    cache.io.cpu.req.valid := io.dbram.req.valid
-    cache.io.cpu.req.bits.addr := io.dbram.req.bits.addr - bramParams.edaddr.U
-    cache.io.cpu.req.bits.data := io.dbram.req.bits.data
-    cache.io.cpu.req.bits.mask := io.dbram.req.bits.mask
-    cache.io.cpu.abort := io.dbram.abort
-    cache.io.nasti <> io.nasti
+    if (enable_hbm) {
+        val cache  = Module(new Cache(cacheParams, nastiParams, xlen))
+        cache.io.cpu.req.valid := io.dbram.req.valid
+        cache.io.cpu.req.bits.addr := io.dbram.req.bits.addr - bramParams.edaddr.U
+        cache.io.cpu.req.bits.data := io.dbram.req.bits.data
+        cache.io.cpu.req.bits.mask := io.dbram.req.bits.mask
+        cache.io.cpu.abort := io.dbram.abort
+        cache.io.nasti <> io.nasti
 
-    val addr = io.dbram.req.bits.addr
-    // val debug_addr = addr < "x80004000".U
-    // dontTouch(debug_addr)
-    val range_check = addr >= bramParams.staddr.U && addr < bramParams.edaddr.U
-    val range_reg = RegNext(range_check)
-    dbram.io.abort := io.dbram.abort || !range_check
-    // when (io.dbram.req.valid) {
-    //     range_reg := range_check
-    // }
+        val addr = io.dbram.req.bits.addr
+        val range_check = addr >= bramParams.staddr.U && addr < bramParams.edaddr.U
+        val range_reg = RegNext(range_check)
+        dbram.io.abort := io.dbram.abort || !range_check
 
-    io.dbram.resp <> Mux(range_reg, dbram.io.resp, cache.io.cpu.resp)
+        io.dbram.resp <> Mux(range_reg, dbram.io.resp, cache.io.cpu.resp)
+    }
+    else {
+        io.nasti <> DontCare
+        io.dbram.resp <> dbram.io.resp
+        dbram.io.abort := io.dbram.abort
+    }
 
     // class ila_arb(seq:Seq[Data]) extends BaseILA(seq)
     //     val inst_ila_arb = Module(new ila_arb(Seq(				
@@ -125,15 +122,15 @@ class TileIO(xlen: Int, nastiParams: NastiBundleParameters) extends Bundle {
 }
 
 object Tile {
-    def apply(config: Config): Tile = new Tile(config.core, config.nasti, config.bram, config.cache)
+    def apply(config: Config): Tile = new Tile(config.enable_hbm, config.core, config.nasti, config.bram, config.cache)
 }
 
 
-class Tile(val coreParams: CoreConfig, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig, val file: String="inst.mem")
+class Tile(val enable_hbm: Boolean, val coreParams: CoreConfig, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig, val file: String="inst.mem")
     extends Module {
     val io = IO(new TileIO(coreParams.xlen, nastiParams))
     val core = Module(new Core(coreParams))
-    val arb = Module(new MemArbiter(coreParams.xlen, nastiParams, bramParams, cacheParams, file))
+    val arb = Module(new MemArbiter(enable_hbm, coreParams.xlen, nastiParams, bramParams, cacheParams, file))
 
     io.host <> core.io.host
     arb.io.ibram <> core.io.icache

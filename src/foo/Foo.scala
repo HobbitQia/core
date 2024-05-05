@@ -157,6 +157,7 @@ class Foo extends Module{
 	val config = MiniConfig()
 	val mini_core = withClockAndReset(userClk, cpu_started.asBool) { 
 		Module(new Tile(
+		enable_hbm = config.enable_hbm,
 		coreParams = config.core, 
 		bramParams = config.bram,
 		nastiParams = config.nasti, 

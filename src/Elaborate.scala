@@ -16,6 +16,7 @@ object elaborate extends App {
 		case "AlveoDynamicTop" => (new ChiselStage()).emitSystemVerilog(new Foo(), Array("--target-dir", "Verilog", "--full-stacktrace", "--output-annotation-file", "Foo.sv"))
 		case "mini" => (new ChiselStage()).emitSystemVerilog(
         new Tile(
+          enable_hbm = config.enable_hbm,
           coreParams = config.core,
           bramParams = config.bram,
           nastiParams = config.nasti,

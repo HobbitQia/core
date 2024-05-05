@@ -5,12 +5,13 @@ package mini.core
 import mini.junctions.NastiBundleParameters
 import mini.core.BramParameters
 
-case class Config(core: CoreConfig, cache: CacheConfig, bram: BramParameters, nasti: NastiBundleParameters)
+case class Config(enable_hbm : Boolean, core: CoreConfig, cache: CacheConfig, bram: BramParameters, nasti: NastiBundleParameters)
 
 object MiniConfig {
   def apply(): Config = {
     val xlen = 32
     Config(
+      enable_hbm = false,
       core = CoreConfig(
         xlen = xlen,
         makeAlu = new AluArea(_),
@@ -22,6 +23,7 @@ object MiniConfig {
         nSets = 256,
         blockBytes = 32
       ),
+      
       bram = BramParameters(
         inst_entries = 4096,
         i_offset = "x80000000",
