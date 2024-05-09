@@ -24,5 +24,7 @@ object elaborate extends App {
         ),
         Array("--target-dir", "Verilog", "--full-stacktrace"),
       )
+    case "test_core" => (new ChiselStage()).emitSystemVerilog(new TestCore(), Array("--target-dir", "Verilog", "--full-stacktrace"))
+    case _ => println("Invalid argument")
   }
 }
