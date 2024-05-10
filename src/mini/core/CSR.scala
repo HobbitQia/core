@@ -351,8 +351,8 @@ class CSR(val xlen: Int) extends Module {
   io.expt := io.illegal || iaddrInvalid || laddrInvalid || saddrInvalid ||
     io.cmd(1, 0).orR && (!csrValid || !privValid) || wen && csrRO ||
     (privInst && !privValid) || isEcall || isEbreak
-  // io.evec := mtvec + (PRV << 6)
-  io.evec := mtvec
+  io.evec := mtvec + (PRV << 6)
+  // io.evec := mtvec
   io.epc := mepc
 
   // Counters

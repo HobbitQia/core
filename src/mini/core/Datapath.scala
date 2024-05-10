@@ -11,7 +11,7 @@ import common.axi._
 
 object Const {
   val PC_START = "x80000000"
-  val PC_EVEC = "x8000000C"
+  val PC_EVEC = 0x100
 }
 
 class DatapathIO(xlen: Int) extends Bundle {
