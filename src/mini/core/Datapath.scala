@@ -141,12 +141,13 @@ class Datapath(val conf: CoreConfig) extends Module {
     */
   val st_type = Reg(io.ctrl.st_type.cloneType)
   val ld_type = Reg(io.ctrl.ld_type.cloneType)
-  val wb_sel = Reg(io.ctrl.wb_sel.cloneType)
-  val wb_en = Reg(Bool())
+  val wb_sel = RegInit(io.ctrl.wb_sel.cloneType, false.B)
+  val wb_en = RegInit(Bool(), false.B)
   val csr_cmd = Reg(io.ctrl.csr_cmd.cloneType)
   val illegal = Reg(Bool())
   val pc_check = Reg(Bool())
   val is_wfi = RegInit(Bool(), false.B)
+  val is_load = RegInit(Bool(), false.B)
   
   when(fe_reg.inst === Instructions.WFI) {
     is_wfi := true.B
@@ -154,10 +155,11 @@ class Datapath(val conf: CoreConfig) extends Module {
     is_wfi := is_wfi
   }
 
+  val load_use_hazard = Wire(Bool())
   /** **** Fetch ****
     */
   val started = RegNext(reset.asBool)
-  val stall = !io.icache.resp.valid || !io.dcache.resp.valid
+  val stall = !io.icache.resp.valid || !io.dcache.resp.valid || load_use_hazard
   val pc = RegInit(Const.PC_START.U(conf.xlen.W) - 4.U(conf.xlen.W))
   // Next Program Counter
   val next_pc = MuxCase(
@@ -224,6 +226,8 @@ class Datapath(val conf: CoreConfig) extends Module {
   // val rs2_alu = Mux(wb_sel === WB_ALU && rs2hazard, mw_reg.alu, regFile.io.rdata2)
   // val rs1 = Mux(wb_sel === WB_CSR && rs1hazard, csr.io.out, rs1_alu)
   // val rs2 = Mux(wb_sel === WB_CSR && rs2hazard, csr.io.out, rs2_alu)
+
+  load_use_hazard := wb_sel === WB_MEM && (rs1_addr === wb_rd_addr || rs2_addr === wb_rd_addr) && wb_en && is_load
 
   val rs1 = Mux(
       rs1hazard_mem, rs1_mem, Mux(rs1hazard_wb, rs1_wb, regFile.io.rdata1)
@@ -338,6 +342,7 @@ class Datapath(val conf: CoreConfig) extends Module {
   io.dcache.abort := csr.io.expt
 
   // Pipelining
+
   when(reset.asBool || !stall && csr.io.expt) {
     mw_reg.pc := 0.U
     mw_reg.inst := Instructions.NOP
@@ -347,7 +352,8 @@ class Datapath(val conf: CoreConfig) extends Module {
     mw_reg.csr_out := 0.U
     wb_sel := WB_MEM
     wb_en := false.B
-  }.elsewhen(!stall && !csr.io.expt) {
+    is_load := false.B
+  }.elsewhen(!stall && !csr.io.expt && !is_load) {
     mw_reg.pc := em_reg.pc
     mw_reg.inst := em_reg.inst
     mw_reg.alu := em_reg.alu
@@ -356,7 +362,12 @@ class Datapath(val conf: CoreConfig) extends Module {
     mw_reg.csr_out := csr.io.out
     wb_sel := em_reg.wb_sel
     wb_en := em_reg.wb_en
+    is_load := em_reg.ld_type.orR.asBool
+  }.elsewhen(!csr.io.expt && is_load) {
+    is_load := false.B
   }
+
+
 
   // class ila_core(seq:Seq[Data]) extends BaseILA(seq)
   //   val inst_ila_core = Module(new ila_core(Seq(				

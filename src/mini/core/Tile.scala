@@ -169,7 +169,7 @@ class Bram(val InstBram: Boolean, val b: BramParameters, val nasti: NastiBundleP
         io.resp.valid := true.B
     }
     else {
-        val bram = XRam(UInt(b.width.W), entries=b.data_entries, latency=1, use_musk=1, initFile=file)
+        val bram = XRam(UInt(b.width.W), entries=b.data_entries, latency=2, use_musk=1, initFile=file)
         val d_addr = log2Ceil(b.data_entries).U
         val offset = log2Ceil(b.width/8).U
         val offset_addr = io.req.bits.addr - b.d_offset.U(xlen.W)

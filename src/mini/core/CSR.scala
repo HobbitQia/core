@@ -440,6 +440,7 @@ class CSR(val xlen: Int) extends Module {
   when(io.has_event_wr) {
     has_event := true.B
     event_recv_cnt := event_recv_cnt + 1.U
+    event_processed_cnt := 0.U
     meta_csr := io.user_csr_wr
   }
 
