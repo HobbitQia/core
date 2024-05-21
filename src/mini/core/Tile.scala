@@ -117,8 +117,8 @@ class TileIO(xlen: Int, nastiParams: NastiBundleParameters) extends Bundle {
     val event_recv_cnt	    = Output(UInt(xlen.W))
     val event_processed_cnt	= Output(UInt(xlen.W))
     val event_type	        = Output(UInt(xlen.W))
-    val user_csr_wr	    = Input(Vec(32,UInt(xlen.W)))
-	val user_csr_rd	    = Output(Vec(32,UInt(xlen.W)))
+    val user_csr_wr	    = Input(Vec(16,UInt(xlen.W)))
+	val user_csr_rd	    = Output(Vec(16,UInt(xlen.W)))
 }
 
 object Tile {
@@ -126,7 +126,7 @@ object Tile {
 }
 
 
-class Tile(val enable_hbm: Boolean, val coreParams: CoreConfig, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig, val file: String="inst.mem")
+class Tile(val enable_hbm: Boolean = false, val coreParams: CoreConfig, val nastiParams: NastiBundleParameters, val bramParams: BramParameters, val cacheParams: CacheConfig, val file: String="inst.mem")
     extends Module {
     val io = IO(new TileIO(coreParams.xlen, nastiParams))
     val core = Module(new Core(coreParams))
@@ -169,7 +169,7 @@ class Bram(val InstBram: Boolean, val b: BramParameters, val nasti: NastiBundleP
         io.resp.valid := true.B
     }
     else {
-        val bram = XRam(UInt(b.width.W), entries=b.data_entries, latency=2, use_musk=1, initFile=file)
+        val bram = XRam(UInt(b.width.W), entries=b.data_entries, latency=1, use_musk=1, initFile=file)
         val d_addr = log2Ceil(b.data_entries).U
         val offset = log2Ceil(b.width/8).U
         val offset_addr = io.req.bits.addr - b.d_offset.U(xlen.W)

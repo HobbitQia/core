@@ -163,8 +163,8 @@ class CSRIO(xlen: Int) extends Bundle {
   val event_recv_cnt	    = Output(UInt(xlen.W))
   val event_processed_cnt	= Output(UInt(xlen.W))
   val event_type	        = Output(UInt(xlen.W))
-  val user_csr_wr	    = Input(Vec(32,UInt(xlen.W)))
-	val user_csr_rd	    = Output(Vec(32,UInt(xlen.W)))
+  val user_csr_wr	    = Input(Vec(16,UInt(xlen.W)))
+	val user_csr_rd	    = Output(Vec(16,UInt(xlen.W)))
 }
 
 class CSR(val xlen: Int) extends Module {
@@ -186,7 +186,7 @@ class CSR(val xlen: Int) extends Module {
   val rdma_print_string_len = RegInit(0.U(xlen.W))
   val rdma_trap = RegInit(0.U(xlen.W))
   // RDMA Hardware
-  val meta_csr = RegInit(VecInit(Seq.fill(32)(0.U(xlen.W))))
+  val meta_csr = RegInit(VecInit(Seq.fill(16)(0.U(xlen.W))))
   val pkg_type_to_cc  = RegInit(0.U(xlen.W))
   val user_table_size = RegInit(0.U(xlen.W))
   val user_header_len = RegInit(0.U(xlen.W))
@@ -317,8 +317,8 @@ class CSR(val xlen: Int) extends Module {
     BitPat(CSR.event_processed_cnt) -> event_processed_cnt,
     BitPat(CSR.event_type) -> event_type,
     // 0x050-0x6F
-    BitPat("b00000101????") -> meta_csr(Cat(0.U(1.W), meta_offset)),
-    BitPat("b00000110????") -> meta_csr(Cat(1.U(1.W), meta_offset))
+    BitPat("b00000101????") -> meta_csr(Cat(0.U(1.W), meta_offset))
+    // BitPat("b00000110????") -> meta_csr(Cat(1.U(1.W), meta_offset))
   )
 
   io.out := Lookup(csr_addr, 0.U, csrFile).asUInt
@@ -432,7 +432,7 @@ class CSR(val xlen: Int) extends Module {
         .elsewhen(csr_addr === CSR.event_processed_cnt) { event_processed_cnt := wdata }
         .elsewhen(csr_addr === CSR.event_type) { event_type := wdata }
         .elsewhen(csr_addr === BitPat("b00000101????")) { meta_csr(Cat(0.U(1.W), meta_offset)) := wdata }
-        .elsewhen(csr_addr === BitPat("b00000110????")) { meta_csr(Cat(1.U(1.W), meta_offset)) := wdata }
+        // .elsewhen(csr_addr === BitPat("b00000110????")) { meta_csr(Cat(1.U(1.W), meta_offset)) := wdata }
     }
   }
   

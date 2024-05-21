@@ -33,8 +33,8 @@ class DatapathIO(xlen: Int) extends Bundle {
   val event_recv_cnt	    = Output(UInt(xlen.W))
   val event_processed_cnt	= Output(UInt(xlen.W))
   val event_type	        = Output(UInt(xlen.W))
-  val user_csr_wr	    = Input(Vec(32,UInt(xlen.W)))
-	val user_csr_rd	    = Output(Vec(32,UInt(xlen.W)))
+  val user_csr_wr	    = Input(Vec(16,UInt(xlen.W)))
+	val user_csr_rd	    = Output(Vec(16,UInt(xlen.W)))
 }
 
 class FetchExecutePipelineRegister(xlen: Int) extends Bundle {
@@ -192,9 +192,14 @@ class Datapath(val conf: CoreConfig) extends Module {
   io.ctrl.inst := fe_reg.inst
 
   // regFile read
-  val rd_addr = fe_reg.inst(11, 7)
-  val rs1_addr = fe_reg.inst(19, 15)
-  val rs2_addr = fe_reg.inst(24, 20)
+  val rd_addr = Reg(UInt(5.W))
+  val rs1_addr = Reg(UInt(5.W))
+  val rs2_addr = Reg(UInt(5.W))
+  when(!stall) {
+    rd_addr := inst(11, 7)
+    rs1_addr := inst(19, 15)
+    rs2_addr := inst(24, 20)
+  }
   regFile.io.raddr1 := rs1_addr
   regFile.io.raddr2 := rs2_addr
 
@@ -205,6 +210,8 @@ class Datapath(val conf: CoreConfig) extends Module {
   // bypass
   // MEM => CSR or ALU res
   // WB  => Load or ALU res
+  
+
   val wb_rd_addr = mw_reg.inst(11, 7)
   val wb_rd_addr_mem = em_reg.inst(11, 7)
   val rs1hazard_wb = wb_en && rs1_addr.orR && (rs1_addr === wb_rd_addr)
@@ -251,7 +258,7 @@ class Datapath(val conf: CoreConfig) extends Module {
 
   // D$ access
   // val daddr = Mux(stall, ew_reg.alu, em_reg.sum) >> 2.U << 2.U
-  val daddr = em_reg.sum >> 2.U << 2.U
+  val daddr = em_reg.sum
   val woffset = (em_reg.sum(1) << 4.U).asUInt | (em_reg.sum(0) << 3.U).asUInt
   io.dcache.req.valid := !stall && (st_type.orR || em_reg.ld_type.orR)
   io.dcache.req.bits.addr := daddr
@@ -297,10 +304,13 @@ class Datapath(val conf: CoreConfig) extends Module {
   // Load (WB)
   // WB
   val loffset = (mw_reg.alu(1) << 4.U).asUInt | (mw_reg.alu(0) << 3.U).asUInt
-  val lshift = io.dcache.resp.bits.data >> loffset
+  val lshift = Reg(UInt(conf.xlen.W))
+  val dcache_resp = Reg(SInt((conf.xlen+1).W))
+  lshift  := io.dcache.resp.bits.data >> loffset
+  dcache_resp := io.dcache.resp.bits.data.zext
   val load = MuxLookup(
     ld_type,    
-    io.dcache.resp.bits.data.zext,
+    dcache_resp,
     Seq(
       LD_LH -> lshift(15, 0).asSInt,
       LD_LB -> lshift(7, 0).asSInt,

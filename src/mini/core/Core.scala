@@ -34,8 +34,8 @@ class CoreIO(xlen: Int) extends Bundle {
   val event_recv_cnt	    = Output(UInt(xlen.W))
   val event_processed_cnt	= Output(UInt(xlen.W))
   val event_type	        = Output(UInt(xlen.W))
-  val user_csr_wr	    = Input(Vec(32,UInt(xlen.W)))
-	val user_csr_rd	    = Output(Vec(32,UInt(xlen.W)))
+  val user_csr_wr	    = Input(Vec(16,UInt(xlen.W)))
+	val user_csr_rd	    = Output(Vec(16,UInt(xlen.W)))
 }
 
 class Core(val conf: CoreConfig) extends Module {
