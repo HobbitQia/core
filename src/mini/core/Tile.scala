@@ -156,7 +156,7 @@ class Tile(val enable_hbm: Boolean = false, val coreParams: CoreConfig, val nast
 class Bram(val InstBram: Boolean, val b: BramParameters, val nasti: NastiBundleParameters, val xlen: Int, val file: String) extends Module {
     val io = IO(new CacheIO(addrWidth = xlen, dataWidth = xlen))
     if (InstBram) {
-        val bram = XRam(UInt(b.width.W), entries=b.inst_entries, latency=1, use_musk=1, initFile=file)
+        val bram = XRam(UInt(b.width.W), entries=b.inst_entries, memory_type="ultra", latency=1, use_musk=1, initFile=file)
         val i_addr = log2Ceil(b.inst_entries).U
         val offset = log2Ceil(b.width/8).U
         bram.io.addr_a := DontCare
@@ -169,7 +169,7 @@ class Bram(val InstBram: Boolean, val b: BramParameters, val nasti: NastiBundleP
         io.resp.valid := true.B
     }
     else {
-        val bram = XRam(UInt(b.width.W), entries=b.data_entries, latency=1, use_musk=1, initFile=file)
+        val bram = XRam(UInt(b.width.W), entries=b.data_entries, memory_type="ultra", latency=1, use_musk=1, initFile=file)
         val d_addr = log2Ceil(b.data_entries).U
         val offset = log2Ceil(b.width/8).U
         val offset_addr = io.req.bits.addr - b.d_offset.U(xlen.W)
